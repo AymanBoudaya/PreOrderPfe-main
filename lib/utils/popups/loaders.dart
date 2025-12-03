@@ -9,25 +9,58 @@ class TLoaders {
   static hideSnackBar() =>
       ScaffoldMessenger.of(Get.context!).hideCurrentSnackBar();
 
-  static customToast({required message}) {
-    ScaffoldMessenger.of(Get.context!).showSnackBar(
-      SnackBar(
-        elevation: 0,
-        duration: const Duration(seconds: 3),
-        backgroundColor: Colors.transparent,
-        content: Container(
-          padding: const EdgeInsets.all(12.0),
-          margin: const EdgeInsets.symmetric(horizontal: 30),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            color: THelperFunctions.isDarkMode(Get.context!)
-                ? TColors.darkerGrey.withValues(alpha: 0.9)
-                : TColors.grey.withValues(alpha: 0.9),
+  static customToast({
+    String title = 'Succès',
+    String message = '',
+    IconData icon = Iconsax.check,
+    Color background = TColors.primary,
+    int duration = 2,
+  }) {
+    Get.closeAllSnackbars(); // Empêche la superposition
+
+    Get.rawSnackbar(
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: background,
+      borderRadius: 8,
+      margin: const EdgeInsets.all(10),
+      duration: Duration(seconds: duration),
+
+      // ---- CONTENU STYLE SUCCESS ----
+      messageText: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, color: Colors.white, size: 22),
+
+          const SizedBox(width: 12),
+
+          // Titre + message comme Get.snackbar()
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16, // Taille similaire au Get.snackbar()
+                  ),
+                ),
+                if (message.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    message,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ]
+              ],
+            ),
           ),
-          child: Center(
-              child: Text(message,
-                  style: Theme.of(Get.context!).textTheme.labelLarge)),
-        ),
+        ],
       ),
     );
   }
@@ -41,7 +74,7 @@ class TLoaders {
       colorText: Colors.white,
       backgroundColor: TColors.primary,
       snackPosition: SnackPosition.BOTTOM,
-      duration: Duration(seconds: duration),
+      duration: Duration(milliseconds: duration),
       margin: const EdgeInsets.all(10),
       icon: const Icon(Iconsax.check, color: TColors.white),
     );

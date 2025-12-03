@@ -516,10 +516,10 @@ class BannerController extends GetxController {
       isLoading.value = true;
       await _bannerRepository.updateBannerStatus(bannerId, newStatus);
 
-
-      TLoaders.successSnackBar(
-        title: 'Succès',
+      TLoaders.customToast(
+        // title: 'Succès',
         message: 'Statut de la bannière mis à jour',
+        // duration: 2
       );
     } catch (e) {
       TLoaders.errorSnackBar(
