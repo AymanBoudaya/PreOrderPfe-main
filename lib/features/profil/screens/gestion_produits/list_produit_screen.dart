@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/widgets/appbar/appbar.dart';
+import '../../../../common/widgets/chips/filter_chips.dart';
 import '../../../../utils/constants/enums.dart';
 import '../../../../utils/produit_helper.dart';
 import '../../../../utils/popups/loaders.dart';
@@ -114,7 +115,12 @@ class _ListProduitScreenState extends State<ListProduitScreen> {
           : Column(
               children: [
                 _buildSearchBar(),
-                _buildFilterChips(),
+                FilterChipsBar(
+                  selectedValue: controller.selectedFilter, // Rx<ProduitFilter>
+                  items: ProduitFilter.values,
+                  labelBuilder: (filter) => _getFilterLabel(filter),
+                  onChanged: (filter) => controller.updateFilter(filter),
+                ),
                 Expanded(child: _buildBody()),
               ],
             ),
@@ -146,7 +152,6 @@ class _ListProduitScreenState extends State<ListProduitScreen> {
 
       return Column(
         children: [
-          // _buildFiltres(),
           Expanded(
             child: Center(
               child: RefreshIndicator(
@@ -220,41 +225,6 @@ class _ListProduitScreenState extends State<ListProduitScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildFilterChips() {
-    return Obx(() {
-      final selectedFilter = controller.selectedFilter.value;
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: ProduitFilter.values.map((filter) {
-            final isSelected = selectedFilter == filter;
-            return Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: FilterChip(
-                label: Text(
-                  _getFilterLabel(filter),
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.grey[700],
-                  ),
-                ),
-                selected: isSelected,
-                onSelected: (selected) {
-                  controller.updateFilter(filter);
-                },
-                backgroundColor: Colors.grey[100],
-                selectedColor: Colors.blue.shade600,
-                checkmarkColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      );
-    });
   }
 
   String _getFilterLabel(ProduitFilter filter) {

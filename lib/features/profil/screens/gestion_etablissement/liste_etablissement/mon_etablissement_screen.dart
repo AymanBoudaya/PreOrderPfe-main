@@ -5,6 +5,7 @@ import 'package:caferesto/utils/popups/loaders.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../../common/widgets/appbar/appbar.dart';
+import '../../../../../common/widgets/chips/filter_chips.dart';
 import '../../../controllers/user_controller.dart';
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/enums.dart';
@@ -127,20 +128,10 @@ class _MonEtablissementScreenState extends State<MonEtablissementScreen> {
 
             // Filtres stylés avec ChoiceChip
             if (_userRole == 'Admin') ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: [
-                    _buildFilterChip('Récents'),
-                    _buildFilterChip('Approuvés'),
-                    _buildFilterChip('Rejetés'),
-                    _buildFilterChip('En attente'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
+              FilterChipsBar(
+                selectedValue: _controller.selectedFilter, // RxString
+                items: ['Récents', 'Approuvés', 'Rejetés', 'En attente'],
+              )
             ],
 
             const SizedBox(height: 12),
@@ -163,27 +154,6 @@ class _MonEtablissementScreenState extends State<MonEtablissementScreen> {
             ),
           ],
         ),
-      );
-    });
-  }
-
-  Widget _buildFilterChip(String label) {
-    return Obx(() {
-      final isSelected = _controller.selectedFilter.value == label;
-      return ChoiceChip(
-        label: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        selected: isSelected,
-        selectedColor: Colors.blue,
-        backgroundColor: Colors.grey[200],
-        onSelected: (_) => _controller.selectedFilter.value = label,
-        elevation: 2,
-        pressElevation: 3,
       );
     });
   }
