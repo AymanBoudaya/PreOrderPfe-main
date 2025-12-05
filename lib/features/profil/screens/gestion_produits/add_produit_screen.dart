@@ -291,13 +291,14 @@ class _AddProduitScreenState extends State<AddProduitScreen>
 
   Widget _buildProductTypeSection(bool isAdmin) {
     final priceField = TextFormField(
-      readOnly: isAdmin ? true : false,
+      readOnly: isAdmin,
       controller: _prixController,
       decoration: const InputDecoration(
-          labelText: 'Prix (DT) *',
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.attach_money_outlined)),
-      keyboardType: TextInputType.numberWithOptions(decimal: true),
+        labelText: 'Prix (DT) *',
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Icons.attach_money_outlined),
+      ),
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
       validator: (v) =>
           _productType == ProductType.single && (v == null || v.isEmpty)
               ? 'Entrez un prix'
@@ -305,59 +306,70 @@ class _AddProduitScreenState extends State<AddProduitScreen>
     );
 
     final promoField = TextFormField(
-      readOnly: isAdmin ? true : false,
+      readOnly: isAdmin,
       controller: _prixPromoController,
       decoration: const InputDecoration(
-          labelText: 'Prix promo (optionnel)',
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.local_offer_outlined)),
-      keyboardType: TextInputType.numberWithOptions(decimal: true),
+        labelText: 'Prix promo (optionnel)',
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Icons.local_offer_outlined),
+      ),
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
     );
 
-    return CategoryFormCard(children: [
-      const Text('Type de produit',
-          style: TextStyle(fontWeight: FontWeight.bold)),
-      Wrap(children: [
-        Expanded(
-          child: RadioListTile<ProductType>(
-            title: const Text('Simple'),
-            value: ProductType.single,
-            groupValue: _productType,
-            onChanged: widget.isAdmin
-                ? null
-                : (v) => setState(() => _productType = v!),
-          ),
+    return CategoryFormCard(
+      children: [
+        const Text(
+          'Type de produit',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        Expanded(
-          child: RadioListTile<ProductType>(
-            title: const Text('Variable'),
-            value: ProductType.variable,
-            groupValue: _productType,
-            onChanged: widget.isAdmin
-                ? null
-                : (v) => setState(() => _productType = v!),
-          ),
+
+        // Product type selector
+        Wrap(
+          children: [
+            RadioListTile<ProductType>(
+              title: const Text('Simple'),
+              value: ProductType.single,
+              groupValue: _productType,
+              onChanged:
+                  isAdmin ? null : (v) => setState(() => _productType = v!),
+            ),
+            RadioListTile<ProductType>(
+              title: const Text('Variable'),
+              value: ProductType.variable,
+              groupValue: _productType,
+              onChanged:
+                  isAdmin ? null : (v) => setState(() => _productType = v!),
+            ),
+          ],
         ),
-      ]),
-      const SizedBox(height: 12),
-      if (_productType == ProductType.single) ...[
-        priceField,
+
         const SizedBox(height: 12),
-        promoField,
-      ]
-    ]);
+
+        if (_productType == ProductType.single) ...[
+          priceField,
+          const SizedBox(height: 12),
+          promoField,
+        ],
+      ],
+    );
   }
 
   Widget _buildTaillesSection(double width, bool isAdmin) {
     if (_productType == ProductType.single) return const SizedBox.shrink();
+
     final dark = THelperFunctions.isDarkMode(context);
     final fieldWidth = (width >= 900) ? 240.0 : (width >= 600 ? 200.0 : 150.0);
 
-    return CategoryFormCard(children: [
-      const Text('Tailles & prix',
-          style: TextStyle(fontWeight: FontWeight.bold)),
-      const SizedBox(height: 8),
-      Wrap(
+    return CategoryFormCard(
+      children: [
+        const Text(
+          'Tailles & prix',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+
+        // Input fields
+        Wrap(
           spacing: 10,
           runSpacing: 10,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -365,112 +377,161 @@ class _AddProduitScreenState extends State<AddProduitScreen>
             SizedBox(
               width: fieldWidth,
               child: TextFormField(
-                readOnly: isAdmin ? true : false,
+                readOnly: isAdmin,
                 controller: _tailleController,
                 focusNode: _tailleFocusNode,
                 decoration: const InputDecoration(
-                    labelText: 'Taille', border: OutlineInputBorder()),
+                  labelText: 'Taille',
+                  border: OutlineInputBorder(),
+                ),
               ),
             ),
+
             SizedBox(
               width: fieldWidth,
               child: TextFormField(
-                readOnly: isAdmin ? true : false,
+                readOnly: isAdmin,
                 controller: _prixTailleController,
                 decoration: const InputDecoration(
-                    labelText: 'Prix', border: OutlineInputBorder()),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  labelText: 'Prix',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
               ),
             ),
+
             if (_estStockable)
               SizedBox(
                 width: fieldWidth,
                 child: TextFormField(
-                  readOnly: isAdmin ? true : false,
+                  readOnly: isAdmin,
                   controller: _stockTailleController,
                   decoration: const InputDecoration(
-                      labelText: 'Stock de la taille',
-                      border: OutlineInputBorder()),
+                    labelText: 'Stock de la taille',
+                    border: OutlineInputBorder(),
+                  ),
                   keyboardType: TextInputType.number,
                 ),
               ),
+
+            // Add or Save button
             ElevatedButton.icon(
               icon: Icon(
-                  _editingIndex != null ? Iconsax.save_2 : Icons.add_circle),
-              label: Text(_editingIndex != null ? 'Sauvegarder' : 'Ajouter'),
-              onPressed: () {
-                final t = _tailleController.text.trim();
-                final p = double.tryParse(_prixTailleController.text) ?? 0;
-                final s = int.tryParse(_stockTailleController.text) ?? 0;
-                if (t.isEmpty || p <= 0 || (_estStockable && s < 0)) {
-                  TLoaders.errorSnackBar(message: 'Taille ou prix invalide');
-                  return;
-                }
-                setState(() {
-                  if (_editingIndex != null) {
-                    final old = _taillesPrix[_editingIndex!];
-                    _taillesPrix[_editingIndex!] = ProductSizePrice(
-                      id: old.id,
-                      size: t,
-                      price: p,
-                      stock: _estStockable ? s : old.stock,
-                    );
-                    _editingIndex = null;
-                  } else {
-                    _taillesPrix.add(ProductSizePrice(
-                      id: '${DateTime.now().millisecondsSinceEpoch}',
-                      size: t,
-                      price: p,
-                      stock: _estStockable ? s : 0,
-                    ));
-                  }
-                  _tailleController.clear();
-                  _prixTailleController.clear();
-                  _stockTailleController.clear();
-                });
-              },
-            )
-          ]),
-      const SizedBox(height: 12),
-      if (_taillesPrix.isNotEmpty)
-        Wrap(
+                _editingIndex != null ? Iconsax.save_2 : Icons.add_circle,
+              ),
+              label: Text(
+                _editingIndex != null ? 'Sauvegarder' : 'Ajouter',
+              ),
+              onPressed: isAdmin
+                  ? null
+                  : () {
+                      final t = _tailleController.text.trim();
+                      final p =
+                          double.tryParse(_prixTailleController.text) ?? 0;
+                      final s = int.tryParse(_stockTailleController.text) ?? 0;
+
+                      if (t.isEmpty || p <= 0 || (_estStockable && s < 0)) {
+                        TLoaders.errorSnackBar(
+                            message: 'Taille ou prix invalide');
+                        return;
+                      }
+
+                      setState(() {
+                        if (_editingIndex != null) {
+                          final old = _taillesPrix[_editingIndex!];
+                          _taillesPrix[_editingIndex!] = ProductSizePrice(
+                            id: old.id,
+                            size: t,
+                            price: p,
+                            stock: _estStockable ? s : old.stock,
+                          );
+                          _editingIndex = null;
+                        } else {
+                          _taillesPrix.add(
+                            ProductSizePrice(
+                              id: '${DateTime.now().millisecondsSinceEpoch}',
+                              size: t,
+                              price: p,
+                              stock: _estStockable ? s : 0,
+                            ),
+                          );
+                        }
+
+                        _tailleController.clear();
+                        _prixTailleController.clear();
+                        _stockTailleController.clear();
+                      });
+                    },
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 12),
+
+        // Display added sizes
+        if (_taillesPrix.isNotEmpty)
+          Wrap(
             spacing: 8,
             runSpacing: 8,
             children: _taillesPrix.asMap().entries.map((e) {
               final i = e.key;
               final tp = e.value;
+
               return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: dark ? Colors.grey.shade800 : Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    Text('${tp.size} - ${tp.price} DT${_estStockable ? ' • Stock: ${tp.stock}' : ''}'),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: dark ? Colors.grey.shade800 : Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${tp.size} - ${tp.price} DT'
+                      '${_estStockable ? ' • Stock: ${tp.stock}' : ''}',
+                    ),
+
+                    // Edit
                     IconButton(
-                        icon: const Icon(Icons.edit, size: 18),
-                        onPressed: () {
-                          setState(() {
-                            _tailleController.text = tp.size;
-                            _prixTailleController.text = tp.price.toString();
-                            if (_estStockable) {
-                              _stockTailleController.text = tp.stock.toString();
-                            }
-                            _editingIndex = i;
-                          });
-                          FocusScope.of(context).requestFocus(_tailleFocusNode);
-                        }),
+                      icon: const Icon(Icons.edit, size: 18),
+                      onPressed: isAdmin
+                          ? null
+                          : () {
+                              setState(() {
+                                _tailleController.text = tp.size;
+                                _prixTailleController.text =
+                                    tp.price.toString();
+                                if (_estStockable) {
+                                  _stockTailleController.text =
+                                      tp.stock.toString();
+                                }
+                                _editingIndex = i;
+                              });
+
+                              FocusScope.of(context)
+                                  .requestFocus(_tailleFocusNode);
+                            },
+                    ),
+
+                    // Delete
                     IconButton(
-                        icon: const Icon(Icons.delete, size: 18),
-                        onPressed: () =>
-                            setState(() => _taillesPrix.removeAt(i))),
-                  ]));
-            }).toList())
-      else
-        const Text('Aucune taille ajoutée.')
-    ]);
+                      icon: const Icon(Icons.delete, size: 18),
+                      onPressed: isAdmin
+                          ? null
+                          : () => setState(() => _taillesPrix.removeAt(i)),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          )
+        else
+          const Text('Aucune taille ajoutée.'),
+      ],
+    );
   }
 
   Widget _buildStockSection(bool isAdmin) {

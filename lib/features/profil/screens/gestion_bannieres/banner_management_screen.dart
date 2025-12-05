@@ -92,13 +92,11 @@ class BannerManagementScreen extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: _buildBannerImage(banner),
-        title: Flexible(
-          child: Text(
-            banner.name,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ),
+        title: Text(
+          banner.name,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
