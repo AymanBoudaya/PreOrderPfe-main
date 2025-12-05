@@ -490,7 +490,7 @@ class BannerManagementScreen extends StatelessWidget {
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.amber),
             SizedBox(width: 12),
-            Text("Confirmer la suppression"),
+            Flexible(child: Text("Confirmer la suppression", softWrap: true)),
           ],
         ),
         content: Column(

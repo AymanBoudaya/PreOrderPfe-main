@@ -23,13 +23,13 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ProduitController());
-final bannerController = Get.find<BannerController>();
+    final bannerController = Get.find<BannerController>();
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Charger les bannières une seule fois si nécessaire
+    // Charger globalement les bannières publiées pour tous les rôles
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      bannerController.loadPublishedBannersIfNeeded();
+      bannerController.loadGlobalPublishedBannersIfNeeded();
     });
 
     return Scaffold(
@@ -69,12 +69,12 @@ final bannerController = Get.find<BannerController>();
               ),
               child: Column(
                 children: [
-                  /// -- PromoSlider avec cache - Ne se recharge pas à chaque rebuild
+                  /// -- PromoSlider global
                   Obx(() {
-                    final banners = bannerController.getPublishedBanners();
-
-                    // Afficher un loader seulement si on charge initialement et qu'il n'y a pas de bannières
-                    if (bannerController.isLoading.value && banners.isEmpty) {
+                    final banners = bannerController.getHomePublishedBanners();
+                    if ((bannerController.isGlobalLoading.value ||
+                            bannerController.isLoading.value) &&
+                        banners.isEmpty) {
                       return SizedBox(
                         height: TDeviceUtils.getPromoSliderHeight(
                             screenWidth, screenHeight),
@@ -83,12 +83,9 @@ final bannerController = Get.find<BannerController>();
                         ),
                       );
                     }
-
-                    // Si pas de bannières, ne rien afficher
                     if (banners.isEmpty) {
                       return const SizedBox.shrink();
                     }
-
                     return TPromoSlider(
                       banners: banners,
                       height: TDeviceUtils.getPromoSliderHeight(

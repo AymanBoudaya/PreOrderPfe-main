@@ -476,7 +476,8 @@ class ListeEtablissementController extends GetxController {
   Future<bool> _showDeleteConfirmation() async {
     final result = await Get.dialog<bool>(
       AlertDialog(
-        title: const Text('Confirmer la suppression'),
+        title: const Flexible(
+            child: Text("Confirmer la suppression", softWrap: true)),
         content: const Text(
             'Êtes-vous sûr de vouloir supprimer cet établissement avec tout ses produits ?'),
         actions: [

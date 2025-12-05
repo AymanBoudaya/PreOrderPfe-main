@@ -30,6 +30,8 @@ class BannerController extends GetxController {
   // Observable variables
   final RxList<BannerModel> allBanners = <BannerModel>[].obs;
   final RxBool isLoading = false.obs;
+  final RxList<BannerModel> globalPublishedBanners = <BannerModel>[].obs;
+  final RxBool isGlobalLoading = false.obs;
   final RxString searchQuery = ''.obs;
   final RxInt selectedTabIndex = 0.obs; // 0: en_attente, 1: publiee, 2: refusee
 
@@ -173,6 +175,28 @@ class BannerController extends GetxController {
     if (allBanners.isEmpty && !isLoading.value) {
       await fetchAllBanners();
     }
+  }
+
+  Future<void> loadGlobalPublishedBannersIfNeeded() async {
+    if (globalPublishedBanners.isEmpty && !isGlobalLoading.value) {
+      try {
+        isGlobalLoading.value = true;
+        final banners = await _bannerRepository.getPublishedBanners();
+        globalPublishedBanners.assignAll(banners);
+      } catch (e) {
+        TLoaders.errorSnackBar(
+            message: 'Erreur lors du chargement des bannières: $e');
+      } finally {
+        isGlobalLoading.value = false;
+      }
+    }
+  }
+
+  List<BannerModel> getHomePublishedBanners() {
+    if (globalPublishedBanners.isNotEmpty) {
+      return globalPublishedBanners;
+    }
+    return getPublishedBanners();
   }
 
   /// Get banners by status
