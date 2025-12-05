@@ -14,30 +14,21 @@ dependencies:
   flutter:
     sdk: flutter
 
-  shared_preferences:
   # Utility Packages
   intl:
-  logger:
-  url_launcher:
   url_strategy: ^0.2.0
-
-  smooth_page_indicator:
   lottie: ^2.7.0
   shimmer:
   cached_network_image:
   flutter_dotenv:
   # Icons
   iconsax:
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.6
   badges: ^3.1.2
 
   # State Management
   get:
   get_storage:
   connectivity_plus:
-  path_provider:
 
   # Product Specific
   readmore:
@@ -58,8 +49,6 @@ dependencies:
   #3d animation controller
   flutter_3d_controller: ^2.0.1 # For 3D perspective effects
   flutter_localization: ^0.3.3
-  searchable_listview: ^2.19.3
-  share_plus: ^7.0.1
   flutter_localizations:
     sdk: flutter
   # Charts
@@ -78,10 +67,7 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/icons/app_icon.png"
-  # Remove adaptive icon settings if you want a simple icon
-  # Or uncomment and adjust if you want adaptive icons for Android
-  # adaptive_icon_background: "#ffffff"
-  # adaptive_icon_foreground: "assets/icons/app_icon.png"
+
 
 flutter:
   uses-material-design: true
@@ -91,12 +77,8 @@ flutter:
     - assets/config/.env
     - assets/logos/
     - assets/images/animations/
-    - assets/images/products/
     - assets/images/user/
-    - assets/icons/categories/
-    - assets/icons/payment_methods/
-    - assets/images/reviews/
-    - assets/images/products/cafe/
+
 
   fonts:
     - family: Poppins
